@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - CIMI - Cyber Incident Monitor in India</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/api.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50">
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50 shadow-sm">
+        <div class="flex items-center justify-between px-6 py-4">
+            <!-- Logo and Brand -->
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-semibold text-slate-900">CIMI - Cyber Incident Monitor in India</h1>
+                        <p class="text-xs text-slate-500">Security Operations Center</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Navigation -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <a href="dashboard.html" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200">
+                    Dashboard
+                </a>
+                <a href="io_c_lookup.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    IoC Lookup
+                </a>
+                <a href="threat_correlation.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    Threat Correlation
+                </a>
+                <a href="log_analysis.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    Log Analysis
+                </a>
+                <a href="threat_intelligence_feeds.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    Threat Feeds
+                </a>
+            </nav>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-4">
+                <!-- New IoC Lookup Button -->
+                <a href="io_c_lookup.html" class="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                    </svg>
+                    New IoC Lookup
+                </a>
+
+                <!-- Alert Notifications -->
+                <button class="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+
+                <!-- User Profile Dropdown -->
+                <div class="relative">
+                    <button id="userMenuButton" class="flex items-center space-x-2 p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">SA</span>
+                        </div>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
+                        <div class="px-4 py-2 border-b border-slate-200">
+                            <p class="text-sm font-medium text-slate-900">Security Analyst</p>
+                            <p class="text-xs text-slate-500">admin@cimi.gov.in</p>
+                        </div>
+                        <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Profile Settings</a>
+                        <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Alert Configuration</a>
+                        <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Export Controls</a>
+                        <div class="border-t border-slate-200 mt-1">
+                            <a href="login.html" id="signOutLink" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuButton" class="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 bg-white">
+            <div class="px-4 py-2 space-y-1">
+                <a href="dashboard.html" class="block px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">Dashboard</a>
+                <a href="io_c_lookup.html" class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg">IoC Lookup</a>
+                <a href="threat_correlation.html" class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg">Threat Correlation</a>
+                <a href="log_analysis.html" class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg">Log Analysis</a>
+                <a href="threat_intelligence_feeds.html" class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg">Threat Feeds</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-8">
+        <div class="flex">
+            <!-- Main Dashboard Content -->
+            <div class="flex-1 px-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">Security Dashboard</h2>
+                            <p class="text-slate-600 mt-1">Real-time threat intelligence monitoring and analysis</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm text-slate-500">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                            </svg>
+                            <span id="lastUpdatedTimestamp">Last updated: Aug 25, 2025 4:04 PM</span>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Active Threats -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-600">Active Threats</p>
+                                <p class="text-3xl font-bold text-red-600 mt-2" id="kpiActiveThreats">247</p>
+                                <div class="flex items-center mt-2">
+                                    <svg class="w-4 h-4 text-red-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-red-600 font-medium">+12%</span>
+                                    <span class="text-sm text-slate-500 ml-1">vs yesterday</span>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feeds Synchronized -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-600">Feeds Synchronized</p>
+                                <p class="text-3xl font-bold text-green-600 mt-2">8/8</p>
+                                <div class="flex items-center mt-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                    <span class="text-sm text-green-600 font-medium">All Active</span>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent IoC Detections -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-600">IoC Detections</p>
+                                <p class="text-3xl font-bold text-amber-600 mt-2" id="kpiIocDetections">1,847</p>
+                                <div class="flex items-center mt-2">
+                                    <svg class="w-4 h-4 text-amber-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 112 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-amber-600 font-medium">-5%</span>
+                                    <span class="text-sm text-slate-500 ml-1">vs yesterday</span>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Critical Alerts -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-600">Critical Alerts</p>
+                                <p class="text-3xl font-bold text-purple-600 mt-2" id="kpiCriticalAlerts">23</p>
+                                <div class="flex items-center mt-2">
+                                    <svg class="w-4 h-4 text-purple-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-purple-600 font-medium">+3</span>
+                                    <span class="text-sm text-slate-500 ml-1">last hour</span>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Threat Trends Chart -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-900">Threat Trends</h3>
+                                <p class="text-sm text-slate-600">Last 7 days activity</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <select class="text-sm border border-slate-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>Last 7 days</option>
+                                    <option>Last 30 days</option>
+                                    <option>Last 90 days</option>
+                                </select>
+                                <button class="p-1 text-slate-400 hover:text-slate-600">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="threatTrendsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Geographic Distribution -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-900">Geographic Distribution</h3>
+                                <p class="text-sm text-slate-600">Threat sources by region</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg">
+                                    Heat Map
+                                </button>
+                                <button class="px-3 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                                    List View
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="geoDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Alerts Table -->
+                <div class="bg-white rounded-lg border border-slate-200 shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-900">Recent Alerts</h3>
+                                <p class="text-sm text-slate-600">Latest security incidents and detections</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                                    Filter
+                                </button>
+                                <button class="px-3 py-1 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Severity</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Threat Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Source</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-200">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Critical
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Malware C2</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">192.168.1.100</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">2 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Investigate</button>
+                                        <button class="text-slate-600 hover:text-slate-900">Block</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                            High
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Suspicious Domain</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">malicious-site.com</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">5 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Investigate</button>
+                                        <button class="text-slate-600 hover:text-slate-900">Block</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            Medium
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Brute Force</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">203.0.113.45</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">12 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Investigate</button>
+                                        <button class="text-slate-600 hover:text-slate-900">Block</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Critical
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Phishing URL</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">fake-bank.net/login</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">18 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Investigate</button>
+                                        <button class="text-slate-600 hover:text-slate-900">Block</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Low
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">Port Scan</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-600">198.51.100.22</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">25 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Investigate</button>
+                                        <button class="text-slate-600 hover:text-slate-900">Monitor</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="px-6 py-4 border-t border-slate-200">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm text-slate-600">Showing 5 of 247 alerts</p>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                                    Previous
+                                </button>
+                                <button class="px-3 py-1 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Threat Feed Status -->
+            <div id="feedSidebar" class="hidden xl:block w-80 bg-white border-l border-slate-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-slate-900">Threat Feed Status</h3>
+                    <button id="collapseSidebar" class="p-1 text-slate-400 hover:text-slate-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- AbuseIPDB -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">AbuseIPDB</p>
+                                <p class="text-xs text-slate-500">Last sync: 30s ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+
+                    <!-- AlienVault OTX -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">AlienVault OTX</p>
+                                <p class="text-xs text-slate-500">Last sync: 1m ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+
+                    <!-- VirusTotal -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">VirusTotal</p>
+                                <p class="text-xs text-slate-500">Last sync: 45s ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+
+                    <!-- CISA RSS -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">CISA RSS</p>
+                                <p class="text-xs text-slate-500">Last sync: 2m ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+
+                    <!-- Malware Bazaar -->
+                    <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Malware Bazaar</p>
+                                <p class="text-xs text-slate-500">Syncing...</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded">Syncing</span>
+                    </div>
+
+                    <!-- URLVoid -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">URLVoid</p>
+                                <p class="text-xs text-slate-500">Last sync: 3m ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+
+                    <!-- Shodan -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">Shodan</p>
+                                <p class="text-xs text-slate-500">Last sync: 1m ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+
+                    <!-- ThreatFox -->
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">ThreatFox</p>
+                                <p class="text-xs text-slate-500">Last sync: 2m ago</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded">Active</span>
+                    </div>
+                </div>
+
+                <!-- Feed Statistics -->
+                <div class="mt-8 p-4 bg-slate-50 rounded-lg">
+                    <h4 class="text-sm font-medium text-slate-900 mb-3">Feed Statistics</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Total IoCs</span>
+                            <span class="font-medium text-slate-900">2,847,392</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">New Today</span>
+                            <span class="font-medium text-slate-900">12,847</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Avg Response</span>
+                            <span class="font-medium text-slate-900">245ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsed Sidebar Toggle -->
+            <div id="collapsedSidebar" class="hidden xl:flex w-12 bg-white border-l border-slate-200 items-start justify-center pt-6">
+                <button id="expandSidebar" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Require an authenticated session
+        if (!CimiAPI.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        // Sign out
+        document.getElementById('signOutLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            CimiAPI.auth.logout().finally(() => { window.location.href = 'login.html'; });
+        });
+
+        // Load live KPI summary from the CIMI backend
+        function loadDashboardSummary() {
+            CimiAPI.dashboard.summary()
+                .then((data) => {
+                    document.getElementById('kpiActiveThreats').textContent = data.activeThreats;
+                    document.getElementById('kpiIocDetections').textContent = data.totalIndicatorsAnalyzed;
+                    document.getElementById('kpiCriticalAlerts').textContent = data.suspiciousIndicators;
+                })
+                .catch((err) => console.warn('Could not load dashboard summary:', err.message));
+        }
+        loadDashboardSummary();
+        setInterval(loadDashboardSummary, 60000);
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // User dropdown toggle
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+
+        userMenuButton.addEventListener('click', () => {
+            userDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuButton.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
+
+        // Sidebar collapse/expand
+        const feedSidebar = document.getElementById('feedSidebar');
+        const collapsedSidebar = document.getElementById('collapsedSidebar');
+        const collapseSidebar = document.getElementById('collapseSidebar');
+        const expandSidebar = document.getElementById('expandSidebar');
+
+        collapseSidebar.addEventListener('click', () => {
+            feedSidebar.classList.add('hidden');
+            collapsedSidebar.classList.remove('hidden');
+        });
+
+        expandSidebar.addEventListener('click', () => {
+            feedSidebar.classList.remove('hidden');
+            collapsedSidebar.classList.add('hidden');
+        });
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Threat Trends Chart
+            const threatTrendsCtx = document.getElementById('threatTrendsChart').getContext('2d');
+            new Chart(threatTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Aug 19', 'Aug 20', 'Aug 21', 'Aug 22', 'Aug 23', 'Aug 24', 'Aug 25'],
+                    datasets: [{
+                        label: 'Malware',
+                        data: [45, 52, 38, 67, 73, 89, 94],
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Phishing',
+                        data: [32, 28, 45, 41, 56, 62, 71],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Suspicious IPs',
+                        data: [78, 82, 69, 91, 87, 95, 102],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#F1F5F9'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            radius: 4,
+                            hoverRadius: 6
+                        }
+                    }
+                }
+            });
+
+            // Geographic Distribution Chart
+            const geoDistributionCtx = document.getElementById('geoDistributionChart').getContext('2d');
+            new Chart(geoDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['United States', 'China', 'Russia', 'Germany', 'Brazil', 'Others'],
+                    datasets: [{
+                        data: [28, 22, 18, 12, 8, 12],
+                        backgroundColor: [
+                            '#3B82F6',
+                            '#EF4444',
+                            '#F59E0B',
+                            '#10B981',
+                            '#8B5CF6',
+                            '#6B7280'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#FFFFFF'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const dataset = data.datasets[0];
+                                            const value = dataset.data[i];
+                                            return {
+                                                text: `${label} (${value}%)`,
+                                                fillStyle: dataset.backgroundColor[i],
+                                                strokeStyle: dataset.backgroundColor[i],
+                                                pointStyle: 'circle',
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        });
+
+        // Update timestamp - Fixed to use proper element selection
+        function updateTimestamp() {
+            const timestampElement = document.getElementById('lastUpdatedTimestamp');
+            if (timestampElement) {
+                const now = new Date();
+                const timeString = now.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                timestampElement.textContent = `Last updated: ${timeString}`;
+            }
+        }
+
+        // Update timestamp every minute
+        setInterval(updateTimestamp, 60000);
+    </script>
+</body>
+</html>

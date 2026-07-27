@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - CIMI - Cyber Incident Monitor in India</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=" 60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" %3E%3Cg fill="none" fill-rule="evenodd" fill-opacity="0.1" %3E%3Ccircle cx="7" cy="7" r="1" %3E%3C g%3E%3C svg%3E');"></div>
+    </div>
+
+    <!-- Security Badge Floating Elements -->
+    <div class="absolute top-8 left-8 opacity-20">
+        <div class="w-16 h-16 border border-blue-400 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="absolute top-8 right-8 opacity-20">
+        <div class="w-12 h-12 border border-amber-400 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Main Login Container -->
+    <div class="w-full max-w-md">
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
+            <!-- Logo and Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl mb-4">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-900 mb-2">CIMI - Cyber Incident Monitor in India</h1>
+                <p class="text-slate-600">Secure access to threat intelligence platform</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-6">
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
+                        Email Address
+                    </label>
+                    <div class="relative">
+                        <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 pl-11" placeholder="Enter your email" required />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="emailError" class="hidden text-sm text-red-600 mt-1"></div>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-slate-700 mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 pl-11 pr-11" placeholder="Enter your password" required />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <svg id="eyeIcon" class="w-5 h-5 text-slate-400 hover:text-slate-600 transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="passwordError" class="hidden text-sm text-red-600 mt-1"></div>
+                </div>
+
+                <!-- Remember Me and Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                        <label for="remember" class="ml-2 block text-sm text-slate-700">
+                            Remember me
+                        </label>
+                    </div>
+                    <div class="text-sm">
+                        <a href="javascript:void(0)" class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
+                            Forgot password?
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sign In Button -->
+                <button type="submit" id="signInBtn" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
+                    <span id="signInText">Sign In</span>
+                    <svg id="loadingIcon" class="hidden animate-spin ml-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                </button>
+
+                <!-- Error Message -->
+                <div id="loginError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span id="loginErrorText">Invalid credentials. Please try again.</span>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Additional Links -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-slate-600">
+                    Need access to the platform?
+                    <a href="javascript:void(0)" class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
+                        Request Access
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Security Trust Signals -->
+        <div class="mt-8 text-center">
+            <div class="flex items-center justify-center space-x-6 text-slate-400">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-xs">SSL Secured</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-xs">SOC 2 Compliant</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-xs">ISO 27001</span>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-2">© 2025 CIMI - Cyber Incident Monitor in India. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <!-- Multi-Factor Authentication Modal -->
+    <div id="mfaModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-4">
+                    <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Multi-Factor Authentication</h3>
+                <p class="text-sm text-slate-600">Enter the 6-digit code from your authenticator app</p>
+            </div>
+
+            <form id="mfaForm" class="space-y-4">
+                <div>
+                    <input type="text" id="mfaCode" name="mfaCode" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-center text-lg font-mono tracking-widest" placeholder="000000" maxlength="6" required />
+                </div>
+
+                <div class="flex space-x-3">
+                    <button type="button" id="cancelMfa" class="flex-1 py-3 px-4 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        Verify
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const signInBtn = document.getElementById('signInBtn');
+        const signInText = document.getElementById('signInText');
+        const loadingIcon = document.getElementById('loadingIcon');
+        const loginError = document.getElementById('loginError');
+        const loginErrorText = document.getElementById('loginErrorText');
+        const mfaModal = document.getElementById('mfaModal');
+        const mfaForm = document.getElementById('mfaForm');
+        const mfaCode = document.getElementById('mfaCode');
+        const cancelMfa = document.getElementById('cancelMfa');
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            if (type === 'text') {
+                eyeIcon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 01.66 2.06L2.06.66a1 1 0 011.28-.08l.1.08 14 14a1 1 0 01-1.42 1.42l-2.78-2.79a10.07 10.07 0 01-12.6-12.6L.66 2.06a1 1 0 011.42-1.42l2.78 2.79A10.07 10.07 0 0117.94 17.94z"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0110 4a10.07 10.07 0 019.542 7 9.12 9.12 0 01-.33 1.07l-1.42-1.42A7.12 7.12 0 0010 6a7.12 7.12 0 00-7.75 4.65l-1.42-1.42A9.12 9.12 0 019.9 4.24z"/>
+                `;
+            } else {
+                eyeIcon.innerHTML = `
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                `;
+            }
+        });
+
+        // Form validation
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function showError(message) {
+            loginErrorText.textContent = message;
+            loginError.classList.remove('hidden');
+        }
+
+        function hideError() {
+            loginError.classList.add('hidden');
+        }
+
+        function setLoading(loading) {
+            if (loading) {
+                signInText.textContent = 'Signing In...';
+                loadingIcon.classList.remove('hidden');
+                signInBtn.disabled = true;
+                signInBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            } else {
+                signInText.textContent = 'Sign In';
+                loadingIcon.classList.add('hidden');
+                signInBtn.disabled = false;
+                signInBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+
+        // Login form submission - authenticates against the CIMI backend
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            hideError();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validation
+            if (!email) {
+                showError('Please enter your email address.');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+
+            if (!password) {
+                showError('Please enter your password.');
+                return;
+            }
+
+            setLoading(true);
+
+            CimiAPI.auth.login(email, password)
+                .then(() => {
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((err) => {
+                    setLoading(false);
+                    showError(err.message || 'Invalid email or password. Please try again.');
+                });
+        });
+
+        // Cancel MFA (modal kept in markup for future MFA support; not wired up)
+        cancelMfa.addEventListener('click', function() {
+            mfaModal.classList.add('hidden');
+        });
+
+        // Real-time form validation
+        emailInput.addEventListener('blur', function() {
+            const emailError = document.getElementById('emailError');
+            if (this.value && !validateEmail(this.value)) {
+                emailError.textContent = 'Please enter a valid email address.';
+                emailError.classList.remove('hidden');
+                this.classList.add('border-red-500');
+            } else {
+                emailError.classList.add('hidden');
+                this.classList.remove('border-red-500');
+            }
+        });
+
+        passwordInput.addEventListener('blur', function() {
+            const passwordError = document.getElementById('passwordError');
+            if (this.value && this.value.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters long.';
+                passwordError.classList.remove('hidden');
+                this.classList.add('border-red-500');
+            } else {
+                passwordError.classList.add('hidden');
+                this.classList.remove('border-red-500');
+            }
+        });
+
+        // Clear errors on input
+        emailInput.addEventListener('input', function() {
+            hideError();
+            this.classList.remove('border-red-500');
+            document.getElementById('emailError').classList.add('hidden');
+        });
+
+        passwordInput.addEventListener('input', function() {
+            hideError();
+            this.classList.remove('border-red-500');
+            document.getElementById('passwordError').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

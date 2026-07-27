@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Threat Correlation - CIMI - Cyber Incident Monitor in India</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50">
+    <!-- Global Navigation Header -->
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo and Brand -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-semibold text-slate-900">CIMI - Cyber Incident Monitor in India</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="dashboard.html" class="text-slate-600 hover:text-blue-600 font-medium transition-colors duration-200">Dashboard</a>
+                    <a href="io_c_lookup.html" class="text-slate-600 hover:text-blue-600 font-medium transition-colors duration-200">IoC Lookup</a>
+                    <a href="threat_correlation.html" class="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">Threat Correlation</a>
+                    <a href="log_analysis.html" class="text-slate-600 hover:text-blue-600 font-medium transition-colors duration-200">Log Analysis</a>
+                    <a href="threat_intelligence_feeds.html" class="text-slate-600 hover:text-blue-600 font-medium transition-colors duration-200">Intel Feeds</a>
+                </nav>
+
+                <!-- User Profile -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-3">
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-slate-900">Security Analyst</p>
+                            <p class="text-xs text-slate-500">analyst@cyberthreat.com</p>
+                        </div>
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-medium text-white">SA</span>
+                        </div>
+                    </div>
+                    <button class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200">
+                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Specialized Toolbar -->
+    <div class="bg-white border-b border-slate-200 px-6 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h2 class="text-xl font-semibold text-slate-900">Threat Correlation Analysis</h2>
+                <div class="flex items-center space-x-2 text-sm text-slate-500">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Last updated: 2 minutes ago</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- View Controls -->
+                <div class="flex items-center bg-slate-100 rounded-lg p-1">
+                    <button id="networkView" class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md transition-colors duration-200">
+                        Network
+                    </button>
+                    <button id="tableView" class="px-3 py-1 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-md transition-colors duration-200">
+                        Table
+                    </button>
+                    <button id="timelineView" class="px-3 py-1 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-md transition-colors duration-200">
+                        Timeline
+                    </button>
+                </div>
+
+                <!-- Confidence Filter -->
+                <select id="confidenceFilter" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="all">All Confidence</option>
+                    <option value="high">High (80%+)</option>
+                    <option value="medium">Medium (50-79%)</option>
+                    <option value="low">Low (20-49%)</option>
+                </select>
+
+                <!-- Export Options -->
+                <div class="relative">
+                    <button id="exportBtn" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Export</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex h-screen">
+        <!-- Left Sidebar - Correlation Controls -->
+        <div class="w-80 bg-white border-r border-slate-200 overflow-y-auto">
+            <div class="p-6 space-y-6">
+                <!-- Search and Query -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Search Indicators</label>
+                    <div class="relative">
+                        <input type="text" id="searchIndicators" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-11" placeholder="Enter IP, domain, hash..." />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Range Selector -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Time Range</label>
+                    <select id="timeRange" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+
+                <!-- Threat Type Filters -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-3">Threat Types</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">Malware</span>
+                            <span class="ml-auto text-xs text-slate-500">1,247</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">Phishing</span>
+                            <span class="ml-auto text-xs text-slate-500">892</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">C&C Servers</span>
+                            <span class="ml-auto text-xs text-slate-500">634</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">Botnets</span>
+                            <span class="ml-auto text-xs text-slate-500">423</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">APT Activity</span>
+                            <span class="ml-auto text-xs text-slate-500">156</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Confidence Threshold -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Minimum Confidence</label>
+                    <div class="px-3">
+                        <input type="range" id="confidenceSlider" min="0" max="100" value="70" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+                        <div class="flex justify-between text-xs text-slate-500 mt-1">
+                            <span>0%</span>
+                            <span id="confidenceValue" class="font-medium text-blue-600">70%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Source Filters -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-3">Intelligence Sources</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">VirusTotal</span>
+                            <div class="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">AbuseIPDB</span>
+                            <div class="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">AlienVault OTX</span>
+                            <div class="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                            <span class="ml-2 text-sm text-slate-700">CISA Feeds</span>
+                            <div class="ml-auto w-2 h-2 bg-amber-500 rounded-full"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="pt-4 border-t border-slate-200">
+                    <button class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors duration-200 mb-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Refresh Data</span>
+                    </button>
+                    <button class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Save Correlation Set</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Visualization Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Network Diagram Container -->
+            <div id="networkContainer" class="flex-1 p-6">
+                <div class="bg-white rounded-lg border border-slate-200 shadow-sm h-full">
+                    <div class="p-4 border-b border-slate-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-slate-900">Threat Relationship Network</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-slate-500">Showing 47 correlations</span>
+                                <button class="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                                    <svg class="w-4 h-4 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L14.586 5H13z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 h-full">
+                        <canvas id="correlationNetwork" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Scrubber -->
+            <div class="px-6 pb-4">
+                <div class="bg-white rounded-lg border border-slate-200 p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-sm font-medium text-slate-700">Timeline Analysis</h4>
+                        <div class="flex items-center space-x-2">
+                            <button id="playTimeline" class="p-1 hover:bg-slate-100 rounded transition-colors duration-200">
+                                <svg class="w-4 h-4 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <span class="text-xs text-slate-500">Aug 18 - Aug 25, 2025</span>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <input type="range" id="timelineScrubber" min="0" max="100" value="100" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+                        <div class="flex justify-between text-xs text-slate-500 mt-1">
+                            <span>Aug 18</span>
+                            <span>Aug 21</span>
+                            <span>Aug 25</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Correlation Insights -->
+        <div class="w-96 bg-white border-l border-slate-200 overflow-y-auto">
+            <div class="p-6 space-y-6">
+                <!-- Selected Node Details -->
+                <div id="nodeDetails" class="hidden">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Indicator Details</h3>
+                    <div class="bg-slate-50 rounded-lg p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-slate-700">Indicator</span>
+                            <span id="selectedIndicator" class="text-sm font-mono text-slate-900">192.168.1.100</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-slate-700">Type</span>
+                            <span id="indicatorType" class="text-sm text-slate-900">IP Address</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-slate-700">Threat Score</span>
+                            <span id="threatScore" class="text-sm font-semibold text-red-600">85/100</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-slate-700">First Seen</span>
+                            <span id="firstSeen" class="text-sm text-slate-900">Aug 20, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-slate-700">Last Seen</span>
+                            <span id="lastSeen" class="text-sm text-slate-900">Aug 25, 2025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Correlation Insights -->
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Correlation Insights</h3>
+                    
+                    <!-- Common Threat Actors -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Common Threat Actors</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900">APT29 (Cozy Bear)</p>
+                                        <p class="text-xs text-slate-600">23 related indicators</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-red-600">92% confidence</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900">Lazarus Group</p>
+                                        <p class="text-xs text-slate-600">15 related indicators</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-amber-600">78% confidence</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attack Patterns -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">MITRE ATT&CK Patterns</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                                <span class="text-sm text-slate-900">T1566.001 - Spearphishing</span>
+                                <span class="text-xs text-blue-600 font-medium">High</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                                <span class="text-sm text-slate-900">T1071.001 - Web Protocols</span>
+                                <span class="text-xs text-amber-600 font-medium">Medium</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                                <span class="text-sm text-slate-900">T1105 - Ingress Tool Transfer</span>
+                                <span class="text-xs text-amber-600 font-medium">Medium</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geographic Clustering -->
+                    <div>
+                        <h4 class="text-sm font-medium text-slate-700 mb-3">Geographic Distribution</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.pexels.com/photos/3532540/pexels-photo-3532540.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&fit=crop" alt="Russia" class="w-4 h-4 rounded-sm object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;" />
+                                    <span class="text-sm text-slate-900">Russia</span>
+                                </div>
+                                <span class="text-sm font-medium text-slate-600">34%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.pixabay.com/photo/2017/03/14/21/00/american-flag-2144392_1280.jpg" alt="China" class="w-4 h-4 rounded-sm object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;" />
+                                    <span class="text-sm text-slate-900">China</span>
+                                </div>
+                                <span class="text-sm font-medium text-slate-600">28%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.unsplash.com/photo-1555992336-03a23c7b20ee?auto=format&fit=crop&w=32&h=32" alt="North Korea" class="w-4 h-4 rounded-sm object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;" />
+                                    <span class="text-sm text-slate-900">North Korea</span>
+                                </div>
+                                <span class="text-sm font-medium text-slate-600">18%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.pexels.com/photos/3532557/pexels-photo-3532557.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&fit=crop" alt="Iran" class="w-4 h-4 rounded-sm object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;" />
+                                    <span class="text-sm text-slate-900">Iran</span>
+                                </div>
+                                <span class="text-sm font-medium text-slate-600">12%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Correlation Statistics -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Correlation Statistics</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm font-medium text-blue-700">Strong Correlations</span>
+                            </div>
+                            <p class="text-2xl font-bold text-blue-900">23</p>
+                            <p class="text-xs text-blue-600">80%+ confidence</p>
+                        </div>
+                        
+                        <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <svg class="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm font-medium text-amber-700">Geographic Clusters</span>
+                            </div>
+                            <p class="text-2xl font-bold text-amber-900">8</p>
+                            <p class="text-xs text-amber-600">Active regions</p>
+                        </div>
+                        
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm font-medium text-green-700">Campaigns</span>
+                            </div>
+                            <p class="text-2xl font-bold text-green-900">5</p>
+                            <p class="text-xs text-green-600">Active campaigns</p>
+                        </div>
+                        
+                        <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm font-medium text-red-700">High Severity</span>
+                            </div>
+                            <p class="text-2xl font-bold text-red-900">12</p>
+                            <p class="text-xs text-red-600">Critical threats</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Correlations -->
+                <div>
+                    <h4 class="text-sm font-medium text-slate-700 mb-3">Recent Correlations</h4>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    <span class="text-sm font-medium text-slate-900">malware.exe</span>
+                                </div>
+                                <span class="text-xs text-slate-500">2 min ago</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-2">Correlated with 5 C&C domains</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">High Risk</span>
+                                <span class="text-xs text-slate-500">95% confidence</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                    <span class="text-sm font-medium text-slate-900">185.234.72.45</span>
+                                </div>
+                                <span class="text-xs text-slate-500">5 min ago</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-2">Linked to phishing campaign</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">Medium Risk</span>
+                                <span class="text-xs text-slate-500">72% confidence</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span class="text-sm font-medium text-slate-900">suspicious-domain.com</span>
+                                </div>
+                                <span class="text-xs text-slate-500">8 min ago</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-2">Part of botnet infrastructure</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Low Risk</span>
+                                <span class="text-xs text-slate-500">58% confidence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-4 border-t border-slate-200 space-y-3">
+                    <button class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Generate Report</span>
+                    </button>
+                    <button class="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors duration-200">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Create Alert Rule</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Search Modal -->
+    <div id="searchModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-slate-900">Advanced Correlation Search</h3>
+                <button id="closeSearchModal" class="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="advancedSearchForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Indicator Type</label>
+                        <select class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">All Types</option>
+                            <option value="ip">IP Address</option>
+                            <option value="domain">Domain</option>
+                            <option value="url">URL</option>
+                            <option value="hash">File Hash</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Threat Category</label>
+                        <select class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">All Categories</option>
+                            <option value="malware">Malware</option>
+                            <option value="phishing">Phishing</option>
+                            <option value="c2">C&C Infrastructure</option>
+                            <option value="apt">APT Activity</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Natural Language Query</label>
+                    <textarea class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-24 resize-none" placeholder="e.g., 'Show me all indicators related to APT29 campaigns targeting financial institutions in the last 30 days'"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelSearch" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        Search Correlations
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!CimiAPI.isAuthenticated()) { window.location.href = "login.html"; }
+        // Mock correlation data
+        const mockCorrelationData = {
+            nodes: [
+                { id: 'ip1', label: '192.168.1.100', type: 'ip', severity: 85, x: 100, y: 150 },
+                { id: 'domain1', label: 'malicious-site.com', type: 'domain', severity: 92, x: 300, y: 100 },
+                { id: 'hash1', label: 'a1b2c3d4...', type: 'hash', severity: 78, x: 200, y: 250 },
+                { id: 'url1', label: 'evil.com/payload', type: 'url', severity: 88, x: 400, y: 200 },
+                { id: 'ip2', label: '10.0.0.50', type: 'ip', severity: 65, x: 150, y: 350 },
+                { id: 'domain2', label: 'phish-bank.net', type: 'domain', severity: 95, x: 350, y: 300 }
+            ],
+            edges: [
+                { from: 'ip1', to: 'domain1', confidence: 92, weight: 3 },
+                { from: 'domain1', to: 'hash1', confidence: 85, weight: 2 },
+                { from: 'hash1', to: 'url1', confidence: 78, weight: 2 },
+                { from: 'ip1', to: 'ip2', confidence: 67, weight: 1 },
+                { from: 'url1', to: 'domain2', confidence: 89, weight: 3 }
+            ]
+        };
+
+        // DOM Elements
+        const networkContainer = document.getElementById('networkContainer');
+        const correlationNetwork = document.getElementById('correlationNetwork');
+        const confidenceSlider = document.getElementById('confidenceSlider');
+        const confidenceValue = document.getElementById('confidenceValue');
+        const searchModal = document.getElementById('searchModal');
+        const closeSearchModal = document.getElementById('closeSearchModal');
+        const nodeDetails = document.getElementById('nodeDetails');
+
+        // Initialize network visualization
+        let networkChart;
+
+        function initializeNetworkChart() {
+            const ctx = correlationNetwork.getContext('2d');
+            
+            // Prepare data for Chart.js scatter plot
+            const datasets = [];
+            const nodeColors = {
+                'ip': '#EF4444',
+                'domain': '#3B82F6', 
+                'hash': '#10B981',
+                'url': '#F59E0B'
+            };
+
+            // Group nodes by type
+            const nodesByType = {};
+            mockCorrelationData.nodes.forEach(node => {
+                if (!nodesByType[node.type]) {
+                    nodesByType[node.type] = [];
+                }
+                nodesByType[node.type].push({
+                    x: node.x,
+                    y: node.y,
+                    r: Math.max(8, node.severity / 5), // Size based on severity
+                    label: node.label,
+                    severity: node.severity,
+                    id: node.id
+                });
+            });
+
+            // Create datasets for each node type
+            Object.keys(nodesByType).forEach(type => {
+                datasets.push({
+                    label: type.toUpperCase(),
+                    data: nodesByType[type],
+                    backgroundColor: nodeColors[type] + '80',
+                    borderColor: nodeColors[type],
+                    borderWidth: 2,
+                    pointRadius: function(context) {
+                        return context.parsed.r || 8;
+                    }
+                });
+            });
+
+            networkChart = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].raw.label;
+                                },
+                                label: function(context) {
+                                    return `Severity: ${context.raw.severity}/100`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false,
+                            min: 0,
+                            max: 500
+                        },
+                        y: {
+                            display: false,
+                            min: 0,
+                            max: 400
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const element = elements[0];
+                            const dataPoint = element.element.$context.raw;
+                            showNodeDetails(dataPoint);
+                        }
+                    }
+                }
+            });
+
+            // Draw correlation lines
+            drawCorrelationLines();
+        }
+
+        function drawCorrelationLines() {
+            // This would typically be done with a custom Chart.js plugin
+            // For demo purposes, we'll add a simple overlay
+            const canvas = correlationNetwork;
+            const ctx = canvas.getContext('2d');
+            
+            // Note: In a real implementation, you'd use Chart.js plugins or a dedicated network visualization library
+        }
+
+        function showNodeDetails(dataPoint) {
+            nodeDetails.classList.remove('hidden');
+            document.getElementById('selectedIndicator').textContent = dataPoint.label;
+            document.getElementById('indicatorType').textContent = getIndicatorType(dataPoint.label);
+            document.getElementById('threatScore').textContent = `${dataPoint.severity}/100`;
+            document.getElementById('firstSeen').textContent = 'Aug 20, 2025';
+            document.getElementById('lastSeen').textContent = 'Aug 25, 2025';
+        }
+
+        function getIndicatorType(indicator) {
+            if (/^\d+\.\d+\.\d+\.\d+$/.test(indicator)) return 'IP Address';
+            if (indicator.includes('.com') || indicator.includes('.net')) return 'Domain';
+            if (indicator.includes('/')) return 'URL';
+            if (indicator.includes('...')) return 'File Hash';
+            return 'Unknown';
+        }
+
+        // Event Listeners
+        confidenceSlider.addEventListener('input', function() {
+            confidenceValue.textContent = this.value + '%';
+            // Filter correlations based on confidence
+            filterCorrelationsByConfidence(this.value);
+        });
+
+        function filterCorrelationsByConfidence(minConfidence) {
+            // Filter and update visualization
+            console.log(`Filtering correlations with minimum confidence: ${minConfidence}%`);
+        }
+
+        // View Controls
+        document.getElementById('networkView').addEventListener('click', function() {
+            setActiveView('network');
+        });
+
+        document.getElementById('tableView').addEventListener('click', function() {
+            setActiveView('table');
+        });
+
+        document.getElementById('timelineView').addEventListener('click', function() {
+            setActiveView('timeline');
+        });
+
+        function setActiveView(view) {
+            // Remove active class from all buttons
+            document.querySelectorAll('#networkView, #tableView, #timelineView').forEach(btn => {
+                btn.classList.remove('text-white', 'bg-blue-600');
+                btn.classList.add('text-slate-600');
+            });
+
+            // Add active class to selected button
+            const activeBtn = document.getElementById(view + 'View');
+            activeBtn.classList.add('text-white', 'bg-blue-600');
+            activeBtn.classList.remove('text-slate-600');
+
+            // Switch view content
+            if (view === 'network') {
+                networkContainer.classList.remove('hidden');
+            } else {
+                networkContainer.classList.add('hidden');
+                // Show alternative views (table/timeline) - would be implemented here
+            }
+        }
+
+        // Timeline Controls
+        document.getElementById('playTimeline').addEventListener('click', function() {
+            const icon = this.querySelector('svg');
+            const isPlaying = icon.innerHTML.includes('M6 4h4v12H6V4zm8 0h4v12h-4V4z');
+            
+            if (isPlaying) {
+                // Pause
+                icon.innerHTML = `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>`;
+            } else {
+                // Play
+                icon.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 002 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>`;
+            }
+        });
+
+        // Search Modal
+        document.getElementById('searchIndicators').addEventListener('focus', function() {
+            searchModal.classList.remove('hidden');
+        });
+
+        closeSearchModal.addEventListener('click', function() {
+            searchModal.classList.add('hidden');
+        });
+
+        document.getElementById('cancelSearch').addEventListener('click', function() {
+            searchModal.classList.add('hidden');
+        });
+
+        // Close modal on outside click
+        searchModal.addEventListener('click', function(e) {
+            if (e.target === searchModal) {
+                searchModal.classList.add('hidden');
+            }
+        });
+
+        // Advanced Search Form
+        document.getElementById('advancedSearchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Process advanced search
+            searchModal.classList.add('hidden');
+            console.log('Processing advanced search...');
+        });
+
+        // Export functionality
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const exportOptions = [
+                'Export as PDF Report',
+                'Export as CSV Data',
+                'Export as JSON',
+                'Export Network Image'
+            ];
+            
+            // Simple alert for demo - in real app would show dropdown menu
+            alert('Export options:\n' + exportOptions.join('\n'));
+        });
+
+        // Filter change handlers
+        document.getElementById('timeRange').addEventListener('change', function() {
+            console.log(`Time range changed to: ${this.value}`);
+            // Update correlations based on time range
+        });
+
+        document.getElementById('confidenceFilter').addEventListener('change', function() {
+            console.log(`Confidence filter changed to: ${this.value}`);
+            // Update correlations based on confidence filter
+        });
+
+        // Threat type checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                console.log(`Filter changed: ${this.nextElementSibling.textContent} - ${this.checked}`);
+                // Update correlations based on threat type filters
+            });
+        });
+
+        // Timeline scrubber
+        document.getElementById('timelineScrubber').addEventListener('input', function() {
+            const value = this.value;
+            // Update visualization based on timeline position
+            console.log(`Timeline position: ${value}%`);
+        });
+
+        // Mobile menu toggle
+        document.querySelector('.md\\:hidden button').addEventListener('click', function() {
+            // Toggle mobile menu - would be implemented here
+            console.log('Mobile menu toggled');
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeNetworkChart();
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                // Update correlation data periodically
+                console.log('Updating correlation data...');
+            }, 30000);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'f':
+                        e.preventDefault();
+                        document.getElementById('searchIndicators').focus();
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        document.getElementById('exportBtn').click();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        location.reload();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
